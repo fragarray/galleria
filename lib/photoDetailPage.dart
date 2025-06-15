@@ -19,33 +19,30 @@ class PhotoDetailPage extends StatefulWidget {
 
 class _PhotoDetailPageState extends State<PhotoDetailPage> {
   final _supabase = Supabase.instance.client;
-  late TextEditingController _locationController;
-  late TextEditingController _authorController;
-  late TextEditingController _descriptionController;
+  late TextEditingController _nomeController;
+  late TextEditingController _luogoController;
+  late TextEditingController _descrizioneController;
   bool _isEditing = false;
-  // ignore: unused_field
+
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    //_saveMetadata();
-    print('Opening detail for photo: ${widget.photo}');
-
-    _locationController = TextEditingController(
+    _nomeController = TextEditingController(
       text: widget.photo.location ?? '',
     );
-    _authorController = TextEditingController(text: widget.photo.author ?? '');
-    _descriptionController = TextEditingController(
+    _luogoController = TextEditingController(text: widget.photo.author ?? '');
+    _descrizioneController = TextEditingController(
       text: widget.photo.description ?? '',
     );
   }
 
   @override
   void dispose() {
-    _locationController.dispose();
-    _authorController.dispose();
-    _descriptionController.dispose();
+    _nomeController.dispose();
+    _luogoController.dispose();
+    _descrizioneController.dispose();
     super.dispose();
   }
 
@@ -89,11 +86,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
     if (confirmed != true) return;
 
     try {
-      // 1. Elimina dal bucket di storage
-      // Esempio: ricava il path dal public URL
-      // final uri = Uri.parse(widget.photo.publicUrl);
-      // final path = uri.pathSegments.sublist(1).join('/'); // rimuove il bucket name se presente
-
+      
       String extractPathFromPublicUrl(String publicUrl) {
         final uri = Uri.parse(publicUrl);
         final index = uri.pathSegments.indexOf('photos');
@@ -102,16 +95,20 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       }
 
       final path = extractPathFromPublicUrl(widget.photo.publicUrl);
-      print('Path finale per cancellazione: $path');
+      //print('Path finale per cancellazione: $path');
 
-      final response = await _supabase.storage.from('photos').remove([path]);
-      print('Risposta dalla cancellazione: $response');
+     // final response = await _supabase.storage.from('photos').remove([path]);
+      //print('Risposta dalla cancellazione: $response');
 
-      print('STO CANCELLANDO $path');
+      //print('STO CANCELLANDO $path');
 
-      final response2 = await _supabase.storage.from('photos').remove([path]);
-      print('Risposta dalla cancellazione: $response2');
+     // final response2 = await _supabase.storage.from('photos').remove([path]);
+      //print('Risposta dalla cancellazione: $response2');
       //await _supabase.storage.from('photos').remove([path]);
+
+      
+      //final response = await _supabase.storage.from('photos').remove([path]);
+      await _supabase.storage.from('photos').remove([path]);
 
       // 2. Elimina dalla tabella 'photos'
       await _supabase.from('photos').delete().eq('id', widget.photo.id);
@@ -141,26 +138,26 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       await _supabase
           .from('photos')
           .update({
-            'location': _locationController.text.isEmpty
+            'location': _nomeController.text.isEmpty
                 ? null
-                : _locationController.text,
-            'author': _authorController.text.isEmpty
+                : _nomeController.text,
+            'author': _luogoController.text.isEmpty
                 ? null
-                : _authorController.text,
-            'description': _descriptionController.text.isEmpty
+                : _luogoController.text,
+            'description': _descrizioneController.text.isEmpty
                 ? null
-                : _descriptionController.text,
+                : _descrizioneController.text,
           })
           .eq('id', widget.photo.id);
 
       setState(() => _isEditing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Metadata saved successfully')),
+        const SnackBar(content: Text('Metadata salvati con successo')),
       );
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error saving metadata: $e')));
+      ).showSnackBar(SnackBar(content: Text('Errore durante il salvataggio: $e')));
     } finally {
       setState(() => _isSaving = false);
     }
@@ -170,7 +167,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Photo Details'),
+        title: const Text('Dettagli Foto'),
         actions: [
           TextButton(
             onPressed: () {
@@ -202,34 +199,27 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
             ),
             const SizedBox(height: 20),
             _buildEditableField(
-              controller: _locationController,
-              label: 'Location',
+              controller: _nomeController,
+              label: 'Nome',
+              icon: Icons.label,
+              enabled: _isEditing,
+            ),
+            const SizedBox(height: 16),
+            _buildEditableField(
+              controller: _luogoController,
+              label: 'Luogo',
               icon: Icons.location_on,
               enabled: _isEditing,
             ),
             const SizedBox(height: 16),
             _buildEditableField(
-              controller: _authorController,
-              label: 'Author',
-              icon: Icons.person,
-              enabled: _isEditing,
-            ),
-            const SizedBox(height: 16),
-            _buildEditableField(
-              controller: _descriptionController,
-              label: 'Description',
+              controller: _descrizioneController,
+              label: 'Descrizione',
               icon: Icons.description,
               enabled: _isEditing,
               maxLines: 3,
             ),
             const SizedBox(height: 20),
-
-            // if (_isEditing)
-            //   ElevatedButton(
-            //     onPressed: _saveMetadata,
-            //     child: const Text('Save Changes'),
-            //   ),
-            //
           ],
         ),
       ),
