@@ -310,7 +310,6 @@ class FotoZoom extends StatelessWidget {
           child: Hero(
             tag: num,
             child: InteractiveViewer(
-              // Aggiunto per lo zoom
               panEnabled: true,
               minScale: 0.5,
               maxScale: 8.0,
