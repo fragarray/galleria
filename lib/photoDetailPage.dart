@@ -24,7 +24,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
   late TextEditingController _descrizioneController;
   bool _isEditing = false;
 
-  bool _isSaving = false;
+
 
   @override
   void initState() {
@@ -95,19 +95,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       }
 
       final path = extractPathFromPublicUrl(widget.photo.publicUrl);
-      //print('Path finale per cancellazione: $path');
-
-     // final response = await _supabase.storage.from('photos').remove([path]);
-      //print('Risposta dalla cancellazione: $response');
-
-      //print('STO CANCELLANDO $path');
-
-     // final response2 = await _supabase.storage.from('photos').remove([path]);
-      //print('Risposta dalla cancellazione: $response2');
-      //await _supabase.storage.from('photos').remove([path]);
-
-      
-      //final response = await _supabase.storage.from('photos').remove([path]);
+    
       await _supabase.storage.from('photos').remove([path]);
 
       // 2. Elimina dalla tabella 'photos'
@@ -132,7 +120,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       return;
     }
 
-    setState(() => _isSaving = true);
+   
 
     try {
       await _supabase
@@ -158,8 +146,6 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Errore durante il salvataggio: $e')));
-    } finally {
-      setState(() => _isSaving = false);
     }
   }
 
