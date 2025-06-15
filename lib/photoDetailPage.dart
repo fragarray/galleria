@@ -8,6 +8,10 @@ import 'package:http/http.dart' as http;
 
 import 'photo.dart';
 
+
+// Pagina per visualizzare i dettagli di una foto
+// e permettere la modifica dei metadati.  
+
 class PhotoDetailPage extends StatefulWidget {
   final Photo photo;
 
