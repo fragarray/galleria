@@ -130,7 +130,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Galleria Personaleeeeeeeeeeeeeeee'),
+        title: const Text('Galleria Personale'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -163,8 +163,10 @@ class _UserPageState extends State<UserPage> {
                       size: 48,
                     ),
                     const SizedBox(height: 16),
-                    const Text('Errore nel caricamento dell\'immagine',
-                        style: TextStyle(fontSize: 18)),
+                    const Text(
+                      'Errore nel caricamento dell\'immagine',
+                      style: TextStyle(fontSize: 18),
+                    ),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _refreshPhotos,
@@ -218,7 +220,7 @@ class _UserPageState extends State<UserPage> {
                                       builder: (context) =>
                                           PhotoDetailPage(photo: photo),
                                     ),
-                                  ).then((_) => _refreshPhotos()); 
+                                  ).then((_) => _refreshPhotos());
                                 },
                                 child: Text('Dettagli'),
                               ),
