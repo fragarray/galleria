@@ -163,11 +163,12 @@ class _UserPageState extends State<UserPage> {
                       size: 48,
                     ),
                     const SizedBox(height: 16),
-                    const Text('Failed to load photos'),
+                    const Text('Errore nel caricamento dell\'immagine',
+                        style: TextStyle(fontSize: 18)),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _refreshPhotos,
-                      child: const Text('Retry'),
+                      child: const Text('Riprova'),
                     ),
                   ],
                 ),
@@ -179,7 +180,7 @@ class _UserPageState extends State<UserPage> {
             return photos.isEmpty
                 ? const Center(
                     child: Text(
-                      'No photos uploaded yet',
+                      'Nessuna foto trovata',
                       style: TextStyle(fontSize: 18),
                     ),
                   )
@@ -217,7 +218,7 @@ class _UserPageState extends State<UserPage> {
                                       builder: (context) =>
                                           PhotoDetailPage(photo: photo),
                                     ),
-                                  ).then((_) => _refreshPhotos());
+                                  ).then((_) => _refreshPhotos()); 
                                 },
                                 child: Text('Dettagli'),
                               ),

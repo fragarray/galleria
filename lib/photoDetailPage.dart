@@ -50,7 +50,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
     super.dispose();
   }
 
-  Future<void> shareImage() async {
+  Future<void> condividiImmagine() async {
   try {
     final url = widget.photo.publicUrl;
     final response = await http.get(Uri.parse(url));
@@ -66,11 +66,15 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
 
     final box = context.findRenderObject() as RenderBox?;
 
+    // ignore: deprecated_member_use
     await Share.shareXFiles(
       [XFile(file.path)],
       text: 'Guarda questa foto!',
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
     );
+
+
+
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Errore nella condivisione: $e')),
@@ -113,7 +117,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
     
       await _supabase.storage.from('photos').remove([path]);
 
-      // 2. Elimina dalla tabella 'photos'
+    
       await _supabase.from('photos').delete().eq('id', widget.photo.id);
 
       if (mounted) {
@@ -134,9 +138,6 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       setState(() => _isEditing = true);
       return;
     }
-
-   
-
     try {
       await _supabase
           .from('photos')
@@ -253,7 +254,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
                 if (_isEditing) {
                   await _saveMetadata();
                 }
-                await shareImage();
+                await condividiImmagine();
               },
               tooltip: 'Condividi',
               child: const Icon(Icons.share),

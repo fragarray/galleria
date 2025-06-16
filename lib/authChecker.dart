@@ -29,7 +29,7 @@ class _AuthCheckerState extends State<AuthChecker> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final session = snapshot.data?.session;
-          return session == null ? const LoginPage() : const UserPage();
+          return session == null ? const LoginPage() : const UserPage(); //La StreamBuilder ascolta i cambiamenti di stato dell'autenticazione
         }
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },

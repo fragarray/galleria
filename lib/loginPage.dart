@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _signUp() async {
+  Future<void> _registraUtente() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
 
 
 
-  Future<void> _signIn() async {
+  Future<void> _logIn() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ElevatedButton(
-              onPressed: _isLoading ? null : _signIn,
+              onPressed: _isLoading ? null : _logIn,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 20),
             OutlinedButton(
-              onPressed: _isLoading ? null : _signUp,
+              onPressed: _isLoading ? null : _registraUtente,
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
