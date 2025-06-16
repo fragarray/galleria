@@ -306,8 +306,9 @@ class FotoZoom extends StatelessWidget {
               maxScale: 8.0,
               child: Image.network(
                 publicUrl,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.contain,
                 width: double.infinity,
+                height: double.infinity,
             ),
           ),
         ),
