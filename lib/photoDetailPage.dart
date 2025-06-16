@@ -51,22 +51,33 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
   }
 
   Future<void> shareImage() async {
+  try {
     final url = widget.photo.publicUrl;
     final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode != 200) {
+      throw Exception('Errore nel download dell\'immagine');
+    }
+
     final bytes = response.bodyBytes;
     final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/shared_image.jpg')
-      ..writeAsBytesSync(bytes);
+    final filePath = '${tempDir.path}/shared_image.jpg';
+    final file = await File(filePath).writeAsBytes(bytes);
 
     final box = context.findRenderObject() as RenderBox?;
-    await SharePlus.instance.share(
-      ShareParams(
-        files: [XFile(file.path)],
-        text: 'Guarda questa foto!',
-        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-      ),
+
+    await Share.shareXFiles(
+      [XFile(file.path)],
+      text: 'Guarda questa foto!',
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Errore nella condivisione: $e')),
     );
   }
+}
+
 
   Future<void> _deletePhoto() async {
     final confirmed = await showDialog<bool>(
