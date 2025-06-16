@@ -130,7 +130,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Galleria Personale'),
+        title: const Text('Galleria Personaleeeeeeeeeeeeeeee'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
