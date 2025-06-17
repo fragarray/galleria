@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 import 'photo.dart';
+import 'fotoZoom.dart';
 
 class PhotoDetailPage extends StatefulWidget {
   final Photo photo;
@@ -271,38 +272,6 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       maxLines: maxLines,
       enabled: enabled,
       readOnly: !enabled,
-    );
-  }
-}
-
-class FotoZoom extends StatelessWidget {
-  const FotoZoom({super.key, required this.publicUrl});
-  final String publicUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: GestureDetector(
-        onTap: () => Navigator.pop(context),
-        onDoubleTap: () => Navigator.pop(context),
-        child: Center(
-          child: Hero(
-            tag: num,
-            child: InteractiveViewer(
-              panEnabled: true,
-              minScale: 0.5,
-              maxScale: 8.0,
-              child: Image.network(
-                publicUrl,
-                fit: BoxFit.contain,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
