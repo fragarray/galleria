@@ -8,10 +8,6 @@ import 'package:http/http.dart' as http;
 
 import 'photo.dart';
 
-
-// Pagina per visualizzare i dettagli di una foto
-// e permettere la modifica dei metadati.  
-
 class PhotoDetailPage extends StatefulWidget {
   final Photo photo;
 
@@ -28,14 +24,10 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
   late TextEditingController _descrizioneController;
   bool _isEditing = false;
 
-
-
   @override
   void initState() {
     super.initState();
-    _nomeController = TextEditingController(
-      text: widget.photo.location ?? '',
-    );
+    _nomeController = TextEditingController(text: widget.photo.location ?? '');
     _luogoController = TextEditingController(text: widget.photo.author ?? '');
     _descrizioneController = TextEditingController(
       text: widget.photo.description ?? '',
@@ -51,37 +43,33 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
   }
 
   Future<void> condividiImmagine() async {
-  try {
-    final url = widget.photo.publicUrl;
-    final response = await http.get(Uri.parse(url));
+    try {
+      final url = widget.photo.publicUrl;
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode != 200) {
-      throw Exception('Errore nel download dell\'immagine');
+      if (response.statusCode != 200) {
+        throw Exception('Errore nel download dell\'immagine');
+      }
+
+      final bytes = response.bodyBytes;
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/shared_image.jpg';
+      final file = await File(filePath).writeAsBytes(bytes);
+
+      final box = context.findRenderObject() as RenderBox?;
+
+      // ignore: deprecated_member_use
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Guarda questa foto!',
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Errore nella condivisione: $e')));
     }
-
-    final bytes = response.bodyBytes;
-    final tempDir = await getTemporaryDirectory();
-    final filePath = '${tempDir.path}/shared_image.jpg';
-    final file = await File(filePath).writeAsBytes(bytes);
-
-    final box = context.findRenderObject() as RenderBox?;
-
-    // ignore: deprecated_member_use
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      text: 'Guarda questa foto!',
-      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );
-
-
-
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Errore nella condivisione: $e')),
-    );
   }
-}
-
 
   Future<void> _deletePhoto() async {
     final confirmed = await showDialog<bool>(
@@ -105,7 +93,6 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
     if (confirmed != true) return;
 
     try {
-      
       String extractPathFromPublicUrl(String publicUrl) {
         final uri = Uri.parse(publicUrl);
         final index = uri.pathSegments.indexOf('photos');
@@ -114,10 +101,9 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       }
 
       final path = extractPathFromPublicUrl(widget.photo.publicUrl);
-    
+
       await _supabase.storage.from('photos').remove([path]);
 
-    
       await _supabase.from('photos').delete().eq('id', widget.photo.id);
 
       if (mounted) {
@@ -159,9 +145,9 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
         const SnackBar(content: Text('Metadata salvati con successo')),
       );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Errore durante il salvataggio: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Errore durante il salvataggio: $e')),
+      );
     }
   }
 
@@ -188,7 +174,8 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FotoZoom(publicUrl: widget.photo.publicUrl),
+                    builder: (context) =>
+                        FotoZoom(publicUrl: widget.photo.publicUrl),
                   ),
                 );
               },
@@ -310,11 +297,11 @@ class FotoZoom extends StatelessWidget {
                 fit: BoxFit.contain,
                 width: double.infinity,
                 height: double.infinity,
+              ),
             ),
           ),
         ),
       ),
-    )
     );
   }
 }

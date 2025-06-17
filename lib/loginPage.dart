@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,7 +27,8 @@ class _LoginPageState extends State<LoginPage> {
         password: _passwordController.text,
       );
       setState(() {
-        _errorMessage = 'Controlla la tua email per confermare la registrazione.';
+        _errorMessage =
+            'Controlla la tua email per confermare la registrazione.';
       });
     } on AuthException catch (e) {
       setState(() => _errorMessage = e.message);
@@ -39,8 +38,6 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => _isLoading = false);
     }
   }
-
-
 
   Future<void> _logIn() async {
     setState(() {
@@ -112,13 +109,13 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: _isLoading
                   ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                   : const Text('Login', style: TextStyle(fontSize: 16)),
             ),
             const SizedBox(height: 20),

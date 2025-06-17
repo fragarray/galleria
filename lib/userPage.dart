@@ -48,7 +48,7 @@ class _UserPageState extends State<UserPage> {
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = '${user.id}/$fileName';
 
-      // Upload file to Supabase Storage
+      // Upload file nello storage Supabase
       await _supabase.storage.from('photos').upload(filePath, file);
 
       // Inserisci i metadati nel database
@@ -199,7 +199,6 @@ class _UserPageState extends State<UserPage> {
                     itemBuilder: (context, index) {
                       final photo = photos[index];
                       return SizedBox.expand(
-                        // Forza l'espansione a tutto lo spazio
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Column(
@@ -209,7 +208,6 @@ class _UserPageState extends State<UserPage> {
                                 fit: BoxFit.contain,
                                 width: double.infinity,
                                 height: 100,
-                                //width: 100,
                               ),
                               const SizedBox(height: 8),
                               ElevatedButton(
