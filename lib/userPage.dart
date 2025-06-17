@@ -21,16 +21,16 @@ class _UserPageState extends State<UserPage> {
   @override
   void initState() {
     super.initState();
-    _refreshPhotos();
+    _aggiornaFoto();
   }
 
-  void _refreshPhotos() {
+  void _aggiornaFoto() {
     setState(() {
-      _photosFuture = _fetchPhotos();
+      _photosFuture = _scaricaFoto();
     });
   }
 
-  Future<void> _takePhoto() async {
+  Future<void> _scattaFoto() async {
     setState(() => _isUploading = true);
 
     try {
@@ -63,11 +63,11 @@ class _UserPageState extends State<UserPage> {
       print('Error taking photo: $e');
     } finally {
       setState(() => _isUploading = false);
-      _refreshPhotos();
+      _aggiornaFoto();
     }
   }
 
-  Future<List<Photo>> _fetchPhotos() async {
+  Future<List<Photo>> _scaricaFoto() async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) return [];
@@ -85,7 +85,7 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
-  Future<void> _uploadPhoto() async {
+  Future<void> _uploadFoto() async {
     setState(() => _isUploading = true);
 
     try {
@@ -118,11 +118,11 @@ class _UserPageState extends State<UserPage> {
       print('Error uploading file: $e');
     } finally {
       setState(() => _isUploading = false);
-      _refreshPhotos();
+      _aggiornaFoto();
     }
   }
 
-  Future<void> _signOut() async {
+  Future<void> _logOut() async {
     await _supabase.auth.signOut();
   }
 
@@ -134,14 +134,14 @@ class _UserPageState extends State<UserPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: _signOut,
+            onPressed: _logOut,
             tooltip: 'Logout',
           ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          _refreshPhotos();
+          _aggiornaFoto();
           await Future.delayed(const Duration(seconds: 1));
         },
         child: FutureBuilder<List<Photo>>(
@@ -169,7 +169,7 @@ class _UserPageState extends State<UserPage> {
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: _refreshPhotos,
+                      onPressed: _aggiornaFoto,
                       child: const Text('Riprova'),
                     ),
                   ],
@@ -218,7 +218,7 @@ class _UserPageState extends State<UserPage> {
                                       builder: (context) =>
                                           PhotoDetailPage(photo: photo),
                                     ),
-                                  ).then((_) => _refreshPhotos());
+                                  ).then((_) => _aggiornaFoto());
                                 },
                                 child: Text('Dettagli'),
                               ),
@@ -239,7 +239,7 @@ class _UserPageState extends State<UserPage> {
           children: [
             FloatingActionButton(
               heroTag: 'upload',
-              onPressed: _isUploading ? null : _uploadPhoto,
+              onPressed: _isUploading ? null : _uploadFoto,
               child: _isUploading
                   ? const CircularProgressIndicator(color: Colors.white)
                   : const Icon(Icons.add_photo_alternate),
@@ -247,7 +247,7 @@ class _UserPageState extends State<UserPage> {
             const SizedBox(height: 16),
             FloatingActionButton(
               heroTag: 'camera',
-              onPressed: _isUploading ? null : _takePhoto,
+              onPressed: _isUploading ? null : _scattaFoto,
               tooltip: 'Scatta Foto',
               child: _isUploading
                   ? const CircularProgressIndicator(color: Colors.white)
