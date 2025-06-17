@@ -26,7 +26,7 @@ class _UserPageState extends State<UserPage> {
 
   void _aggiornaFoto() {
     setState(() {
-      _photosFuture = _scaricaFoto();
+      _photosFuture = _scaricaListaFoto();
     });
   }
 
@@ -67,7 +67,7 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
-  Future<List<Photo>> _scaricaFoto() async {
+  Future<List<Photo>> _scaricaListaFoto() async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) return [];
