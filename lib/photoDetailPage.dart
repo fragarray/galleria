@@ -42,7 +42,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
     super.dispose();
   }
 
-  Future<void> condividiImmagine() async {
+  Future<void> _condividiImmagine() async {
     try {
       final url = widget.photo.publicUrl;
       final response = await http.get(Uri.parse(url));
@@ -234,6 +234,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
                   ? const Icon(Icons.edit)
                   : const Icon(Icons.check),
             ),
+
             const SizedBox(height: 16),
             FloatingActionButton(
               heroTag: 'condividi',
@@ -241,7 +242,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
                 if (_isEditing) {
                   await _saveMetadata();
                 }
-                await condividiImmagine();
+                await _condividiImmagine();
               },
               tooltip: 'Condividi',
               child: const Icon(Icons.share),
