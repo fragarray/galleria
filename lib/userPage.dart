@@ -34,12 +34,12 @@ class _UserPageState extends State<UserPage> {
     setState(() => _isUploading = true);
 
     try {
-      final photos = await _scaricaListaFoto();
+      final listaFoto = await _scaricaListaFoto();
 
       final user = _supabase.auth.currentUser;
       if (user == null) return;
 
-      if (photos.isEmpty) {
+      if (listaFoto.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Nessuna foto da eliminare')),
         );
@@ -90,8 +90,7 @@ class _UserPageState extends State<UserPage> {
 
       // Cancella i file dallo storage
 
-      for (final photo in photos) {
-        print('Deleting photo: ${photo.filePath}');
+      for (final photo in listaFoto) {
         await _supabase.storage.from('photos').remove([photo.filePath]);
       }
 
