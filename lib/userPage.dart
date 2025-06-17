@@ -34,6 +34,18 @@ class _UserPageState extends State<UserPage> {
     setState(() => _isUploading = true);
 
     try {
+      final photos = await _scaricaListaFoto();
+
+      final user = _supabase.auth.currentUser;
+      if (user == null) return;
+
+      if (photos.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nessuna foto da eliminare')),
+        );
+        return;
+      }
+
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -54,10 +66,27 @@ class _UserPageState extends State<UserPage> {
 
       if (confirmed != true) return;
 
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
+      final confirmedSicuro = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Cancella tutto'),
+          content: const Text(
+            'Quest\'operazione eliminerà tutte le foto ed è irreversibile. Sei sicuro?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Annulla'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Elimina'),
+            ),
+          ],
+        ),
+      );
 
-      final photos = await _scaricaListaFoto();
+      if (confirmedSicuro != true) return;
 
       // Cancella i file dallo storage
 
