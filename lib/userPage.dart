@@ -30,6 +30,52 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void _cancellaTutto() async {
+    setState(() => _isUploading = true);
+
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Cancella tutto'),
+          content: const Text('Vuoi davvero eliminare tutte le foto?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Annulla'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Elimina'),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      final user = _supabase.auth.currentUser;
+      if (user == null) return;
+
+      final photos = await _scaricaListaFoto();
+
+      // Cancella i file dallo storage
+
+      for (final photo in photos) {
+        print('Deleting photo: ${photo.filePath}');
+        await _supabase.storage.from('photos').remove([photo.filePath]);
+      }
+
+      // Cancella tutte le foto dell'utente
+      await _supabase.from('photos').delete().eq('user_id', user.id);
+    } catch (e) {
+      print('Error deleting photos: $e');
+    } finally {
+      setState(() => _isUploading = false);
+      _aggiornaFoto();
+    }
+  }
+
   Future<void> _scattaFoto() async {
     setState(() => _isUploading = true);
 
@@ -136,6 +182,11 @@ class _UserPageState extends State<UserPage> {
             icon: const Icon(Icons.logout),
             onPressed: _logOut,
             tooltip: 'Logout',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _cancellaTutto,
+            tooltip: 'Cancella Tutto',
           ),
         ],
       ),

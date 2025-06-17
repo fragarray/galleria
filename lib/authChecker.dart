@@ -25,6 +25,8 @@ class _AuthCheckerState extends State<AuthChecker> {
     return StreamBuilder<AuthState>(
       stream: _authStateStream,
       builder: (context, snapshot) {
+        //Lo snapshot contiene lo stato attuale dell'autenticazione
+        // cioè l'ogetto della variabile _authStateStream
         if (snapshot.connectionState == ConnectionState.active) {
           final session = snapshot.data?.session;
           return session == null

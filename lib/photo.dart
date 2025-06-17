@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 class Photo {
   final int id;
   final String filePath;
