@@ -163,33 +163,35 @@ class _UserPageState extends State<UserPage> {
     setState(() => _isUploading = true);
 
     try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: ImageSource.gallery,
+      final List<XFile>? pickedFiles = await _picker.pickMultiImage(
         imageQuality: 80,
       );
 
-      if (pickedFile == null) return;
+      if (pickedFiles == null || pickedFiles.isEmpty) return;
 
       final user = _supabase.auth.currentUser;
       if (user == null) return;
 
-      final file = File(pickedFile.path);
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final filePath = '${user.id}/$fileName';
+      for (final pickedFile in pickedFiles) {
+        final file = File(pickedFile.path);
+        final fileName =
+            '${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
+        final filePath = '${user.id}/$fileName';
 
-      // Upload file to storage
-      await _supabase.storage.from('photos').upload(filePath, file);
+        // Upload file to storage
+        await _supabase.storage.from('photos').upload(filePath, file);
 
-      // Insert metadata into database - AGGIUNGI user_id
-      await _supabase.from('photos').insert({
-        'user_id': user.id, // IMPORTANTE!
-        'file_path': filePath,
-        'location': null,
-        'author': null,
-        'description': null,
-      });
+        // Insert metadata into database
+        await _supabase.from('photos').insert({
+          'user_id': user.id,
+          'file_path': filePath,
+          'location': null,
+          'author': null,
+          'description': null,
+        });
+      }
     } catch (e) {
-      print('Error uploading file: $e');
+      print('Error uploading files: $e');
     } finally {
       setState(() => _isUploading = false);
       _aggiornaFoto();
