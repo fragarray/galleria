@@ -320,7 +320,9 @@ class _UserPageState extends State<UserPage> {
               heroTag: 'upload',
               onPressed: _isUploading ? null : _uploadFoto,
               child: _isUploading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const CircularProgressIndicator(
+                      color: Color.fromARGB(255, 9, 90, 145),
+                    )
                   : const Icon(Icons.add_photo_alternate),
             ),
             const SizedBox(height: 16),
@@ -329,7 +331,9 @@ class _UserPageState extends State<UserPage> {
               onPressed: _isUploading ? null : _scattaFoto,
               tooltip: 'Scatta Foto',
               child: _isUploading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? const CircularProgressIndicator(
+                      color: Color.fromARGB(255, 9, 90, 145),
+                    )
                   : const Icon(Icons.camera_enhance),
             ),
           ],

@@ -192,21 +192,21 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
               controller: _nomeController,
               label: 'Nome',
               icon: Icons.label,
-              enabled: _isEditing,
+              isEnabled: _isEditing,
             ),
             const SizedBox(height: 16),
             _buildEditableField(
               controller: _luogoController,
               label: 'Luogo',
               icon: Icons.location_on,
-              enabled: _isEditing,
+              isEnabled: _isEditing,
             ),
             const SizedBox(height: 16),
             _buildEditableField(
               controller: _descrizioneController,
               label: 'Descrizione',
               icon: Icons.description,
-              enabled: _isEditing,
+              isEnabled: _isEditing,
               maxLines: 3,
             ),
             const SizedBox(height: 20),
@@ -238,7 +238,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
 
             const SizedBox(height: 16),
             FloatingActionButton(
-              heroTag: 'condividi',
+              heroTag: 'camera',
               onPressed: () async {
                 if (_isEditing) {
                   await _saveMetadata();
@@ -258,7 +258,7 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
     required TextEditingController controller,
     required String label,
     required IconData icon,
-    bool enabled = false,
+    bool isEnabled = false,
     int maxLines = 1,
   }) {
     return TextField(
@@ -267,11 +267,10 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
         labelText: label,
         prefixIcon: Icon(icon),
         border: const OutlineInputBorder(),
-        enabled: enabled,
+        enabled: isEnabled,
       ),
       maxLines: maxLines,
-      enabled: enabled,
-      readOnly: !enabled,
+      readOnly: !isEnabled,
     );
   }
 }
