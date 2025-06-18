@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -145,39 +146,26 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: const Text('Registrati', style: TextStyle(fontSize: 16)),
             ),
-
-            // ...existing code...
-            const SizedBox(height: 30),
-            // ...existing code...
-            const SizedBox(height: 30),
-            Text(
-              'Oppure accedi con:',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            Row(
+            const SizedBox(height: 20),
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: Icon(Icons.facebook, size: 50),
-                  onPressed: () => _signInWithProvider('facebook'),
-                  color: Colors.blue,
-                  iconSize: 32,
-                  tooltip: 'Accedi con Facebook',
+                SignInButton(
+                  Buttons.Google,
+                  onPressed: () => _signInWithProvider('google'),
+                  text: 'Accedi con Google',
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
                 SizedBox(width: 24),
-                IconButton(
-                  icon: Icon(Icons.g_mobiledata, size: 50),
-                  onPressed: () => _signInWithProvider('google'),
-                  color: Colors.red,
-                  iconSize: 32,
-                  tooltip: 'Accedi con Google',
+                SignInButton(
+                  Buttons.Facebook,
+                  onPressed: () => _signInWithProvider('facebook'),
+                  text: 'Accedi con Facebook',
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
+                SizedBox(width: 24),
               ],
             ),
-            // ...existing code...
-
-            // ...existing code...
           ],
         ),
       ),
