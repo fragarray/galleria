@@ -147,12 +147,17 @@ class _LoginPageState extends State<LoginPage> {
             ),
 
             // ...existing code...
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
+            Text(
+              'Oppure accedi con:',
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  icon: Icon(Icons.facebook, size: 32),
+                  icon: Icon(Icons.facebook, size: 50),
                   onPressed: () => _signInWithProvider('facebook'),
                   //  ? null
                   //  : () => _signInWithProvider('facebook'), // Implement Facebook login logic here
