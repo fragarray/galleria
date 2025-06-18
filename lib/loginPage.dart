@@ -148,6 +148,8 @@ class _LoginPageState extends State<LoginPage> {
 
             // ...existing code...
             const SizedBox(height: 30),
+            // ...existing code...
+            const SizedBox(height: 30),
             Text(
               'Oppure accedi con:',
               style: TextStyle(fontSize: 16),
@@ -159,14 +161,21 @@ class _LoginPageState extends State<LoginPage> {
                 IconButton(
                   icon: Icon(Icons.facebook, size: 50),
                   onPressed: () => _signInWithProvider('facebook'),
-                  //  ? null
-                  //  : () => _signInWithProvider('facebook'), // Implement Facebook login logic here
                   color: Colors.blue,
                   iconSize: 32,
                   tooltip: 'Accedi con Facebook',
                 ),
+                SizedBox(width: 24),
+                IconButton(
+                  icon: Icon(Icons.g_mobiledata, size: 50),
+                  onPressed: () => _signInWithProvider('google'),
+                  color: Colors.red,
+                  iconSize: 32,
+                  tooltip: 'Accedi con Google',
+                ),
               ],
             ),
+            // ...existing code...
 
             // ...existing code...
           ],
