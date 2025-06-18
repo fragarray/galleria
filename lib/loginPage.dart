@@ -15,25 +15,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _signInWithProvider(String provider) async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      await _supabase.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: 'https://kzfgijyfzjamvcglkxgu.supabase.co/auth/v1/callback',
-      ); // esempio per Google
-    } on AuthException catch (e) {
-      setState(() => _errorMessage = e.message);
-    } catch (e) {
-      setState(() => _errorMessage = 'Errore durante il login social');
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
   Future<void> _registraUtente() async {
     setState(() {
       _isLoading = true;
@@ -145,30 +126,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: const Text('Registrati', style: TextStyle(fontSize: 16)),
             ),
-            // ...existing code...
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.nat, size: 32),
-                  onPressed: _isLoading
-                      ? null
-                      : () => _signInWithProvider('google'),
-                  tooltip: 'Accedi con Google',
-                ),
-                const SizedBox(width: 16),
-                IconButton(
-                  icon: Icon(Icons.facebook, size: 32),
-                  onPressed: _isLoading
-                      ? null
-                      : () => _signInWithProvider('facebook'),
-                  tooltip: 'Accedi con Facebook',
-                ),
-              ],
-            ),
-
-            // ...existing code...
           ],
         ),
       ),
