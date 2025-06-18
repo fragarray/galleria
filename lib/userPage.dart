@@ -31,6 +31,25 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
+  void _showInstructions() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Istruzioni'),
+        content: const Text(
+          'Per aggiungere foto, usa il pulsante "+" per caricare immagini dalla galleria o il pulsante della fotocamera per scattare una foto. '
+          'Puoi eliminare le foto con un tap prolungato su di esse.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _deletePhoto(Photo photo) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -257,6 +276,11 @@ class _UserPageState extends State<UserPage> {
       appBar: AppBar(
         title: const Text('Galleria Personale'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: _showInstructions,
+            tooltip: 'Istruzioni',
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logOut,
