@@ -59,6 +59,25 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _signInWithProvider(String provider) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      await _supabase.auth.signInWithOAuth(
+        provider == 'facebook' ? OAuthProvider.facebook : OAuthProvider.google,
+        redirectTo: 'io.supabase.galleria://login-callback/',
+      );
+    } on AuthException catch (e) {
+      setState(() => _errorMessage = e.message);
+    } catch (e) {
+      setState(() => _errorMessage = 'Errore durante il login social');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,6 +145,25 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: const Text('Registrati', style: TextStyle(fontSize: 16)),
             ),
+
+            // ...existing code...
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.facebook, size: 32),
+                  onPressed: () => _signInWithProvider('facebook'),
+                  //  ? null
+                  //  : () => _signInWithProvider('facebook'), // Implement Facebook login logic here
+                  color: Colors.blue,
+                  iconSize: 32,
+                  tooltip: 'Accedi con Facebook',
+                ),
+              ],
+            ),
+
+            // ...existing code...
           ],
         ),
       ),
