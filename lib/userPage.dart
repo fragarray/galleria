@@ -258,6 +258,7 @@ class _UserPageState extends State<UserPage> {
 
             final photos = snapshot.data ?? [];
 
+            // ...existing code...
             return photos.isEmpty
                 ? const Center(
                     child: Text(
@@ -266,42 +267,37 @@ class _UserPageState extends State<UserPage> {
                     ),
                   )
                 : GridView.builder(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(2.0),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                          childAspectRatio: 0.8,
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 1,
+                          mainAxisSpacing: 1,
+                          childAspectRatio: 1,
                         ),
                     itemCount: photos.length,
                     itemBuilder: (context, index) {
                       final photo = photos[index];
-                      return SizedBox.expand(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Column(
-                            children: [
-                              Image.network(
-                                photo.publicUrl,
-                                fit: BoxFit.contain,
-                                width: double.infinity,
-                                height: 100,
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PhotoDetailPage(photo: photo),
                               ),
-                              const SizedBox(height: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          PhotoDetailPage(photo: photo),
-                                    ),
-                                  ).then((_) => _aggiornaFoto());
-                                },
-                                child: Text('Dettagli'),
-                              ),
-                            ],
+                            ).then((_) => _aggiornaFoto());
+                          },
+                          child: AspectRatio(
+                            aspectRatio: 1,
+                            child: Image.network(
+                              photo.publicUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
                           ),
                         ),
                       );
