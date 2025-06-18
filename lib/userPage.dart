@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'photo.dart';
 import 'photoDetailPage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -294,11 +295,16 @@ class _UserPageState extends State<UserPage> {
                           },
                           child: AspectRatio(
                             aspectRatio: 1,
-                            child: Image.network(
-                              photo.publicUrl,
+                            child: CachedNetworkImage(
+                              imageUrl: photo.publicUrl,
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
+                              placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                             ),
                           ),
                         ),

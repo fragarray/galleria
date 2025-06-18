@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'photo.dart';
 import 'fotoZoom.dart';
@@ -180,11 +181,14 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
                   ),
                 );
               },
-              child: Image.network(
-                widget.photo.publicUrl,
+              child: CachedNetworkImage(
+                imageUrl: widget.photo.publicUrl,
                 fit: BoxFit.fitHeight,
                 width: double.infinity,
                 height: 300,
+                placeholder: (context, url) =>
+                    const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
             const SizedBox(height: 20),
