@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _signInWithProvider(String provider) async {
+  Future<void> _logInViaProvider(String provider) async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -152,14 +152,14 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 SignInButton(
                   Buttons.Google,
-                  onPressed: () => _signInWithProvider('google'),
+                  onPressed: () => _logInViaProvider('google'),
                   text: 'Accedi con Google',
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
                 SizedBox(width: 24),
                 SignInButton(
                   Buttons.Facebook,
-                  onPressed: () => _signInWithProvider('facebook'),
+                  onPressed: () => _logInViaProvider('facebook'),
                   text: 'Accedi con Facebook',
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
