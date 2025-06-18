@@ -31,7 +31,7 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  void _showInstructions() {
+  void _mostraIstruzioni() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -278,7 +278,7 @@ class _UserPageState extends State<UserPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
-            onPressed: _showInstructions,
+            onPressed: _mostraIstruzioni,
             tooltip: 'Istruzioni',
           ),
           IconButton(
