@@ -31,54 +31,6 @@ class _UserPageState extends State<UserPage> {
     });
   }
 
-  Future<bool> _deletePhoto(Photo photo) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Elimina foto'),
-        content: const Text('Vuoi davvero eliminare questa foto?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Elimina'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return false;
-
-    try {
-      String extractPathFromPublicUrl(String publicUrl) {
-        final uri = Uri.parse(publicUrl);
-        final index = uri.pathSegments.indexOf('photos');
-        if (index == -1 || index + 1 >= uri.pathSegments.length) return '';
-        return uri.pathSegments.sublist(index + 1).join('/');
-      }
-
-      final path = extractPathFromPublicUrl(photo.publicUrl);
-
-      await _supabase.storage.from('photos').remove([path]);
-      await _supabase.from('photos').delete().eq('id', photo.id);
-
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Foto eliminata')));
-      }
-      return true;
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Errore durante l\'eliminazione: $e')),
-      );
-      return false;
-    }
-  }
-
   void _cancellaTutto() async {
     setState(() => _isUploading = true);
 
@@ -159,7 +111,7 @@ class _UserPageState extends State<UserPage> {
     try {
       final XFile? pickedFile = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 100,
+        imageQuality: 80,
       );
 
       if (pickedFile == null) return;
@@ -213,7 +165,7 @@ class _UserPageState extends State<UserPage> {
 
     try {
       final List<XFile>? pickedFiles = await _picker.pickMultiImage(
-        imageQuality: 100,
+        imageQuality: 80,
       );
 
       if (pickedFiles == null || pickedFiles.isEmpty) return;
@@ -309,6 +261,7 @@ class _UserPageState extends State<UserPage> {
 
             final photos = snapshot.data ?? [];
 
+            // ...existing code...
             return photos.isEmpty
                 ? const Center(
                     child: Text(
@@ -339,11 +292,6 @@ class _UserPageState extends State<UserPage> {
                                     PhotoDetailPage(photo: photo),
                               ),
                             ).then((_) => _aggiornaFoto());
-                          },
-
-                          onLongPress: () async {
-                            final deleted = await _deletePhoto(photo);
-                            if (deleted) _aggiornaFoto();
                           },
                           child: AspectRatio(
                             aspectRatio: 1,
