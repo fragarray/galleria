@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'photo.dart';
-import 'fotoZoom.dart';
+import 'foto_zoom.dart';
 
 class PhotoDetailPage extends StatefulWidget {
   final Photo photo;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'photo.dart';
-import 'photoDetailPage.dart';
+import 'dettagli_foto.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class UserPage extends StatefulWidget {

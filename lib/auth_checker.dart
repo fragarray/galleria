@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'loginPage.dart';
-import 'userPage.dart';
+import 'login_page.dart';
+import 'pagina_utente.dart';
 
 class AuthChecker extends StatefulWidget {
   const AuthChecker({super.key});

@@ -1,8 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'authChecker.dart';
+import 'auth_checker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,4 +31,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
