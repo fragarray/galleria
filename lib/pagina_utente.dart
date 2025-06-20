@@ -363,7 +363,9 @@ class _UserPageState extends State<UserPage> {
                                 builder: (context) =>
                                     PhotoDetailPage(photo: photo),
                               ),
-                            ).then((_) => _aggiornaFoto());
+                            ).then(
+                              (_) => _aggiornaFoto(),
+                            ); //Al ritorno aggiorna la lista
                           },
 
                           onLongPress: () async {
@@ -405,7 +407,7 @@ class _UserPageState extends State<UserPage> {
               onPressed: _isUploading ? null : _uploadFoto,
               child: _isUploading
                   ? const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 9, 90, 145),
+                      color: Color.fromARGB(255, 0, 90, 150),
                     )
                   : const Icon(Icons.add_photo_alternate),
             ),
@@ -416,7 +418,7 @@ class _UserPageState extends State<UserPage> {
               tooltip: 'Scatta Foto',
               child: _isUploading
                   ? const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 9, 90, 145),
+                      color: Color.fromARGB(255, 0, 90, 150),
                     )
                   : const Icon(Icons.camera_enhance),
             ),
