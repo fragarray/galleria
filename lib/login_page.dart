@@ -69,9 +69,7 @@ class _LoginPageState extends State<LoginPage> {
       await _supabase.auth.signInWithOAuth(
         provider == 'facebook' ? OAuthProvider.facebook : OAuthProvider.google,
         redirectTo: 'io.supabase.galleria://login-callback/',
-        authScreenLaunchMode: (provider != 'facebook'
-            ? LaunchMode.inAppWebView
-            : LaunchMode.inAppBrowserView),
+        authScreenLaunchMode: LaunchMode.inAppBrowserView,
       );
     } on AuthException catch (e) {
       setState(() => _errorMessage = e.message);
