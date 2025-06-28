@@ -31,15 +31,6 @@
 
 <hr>
 
-<h2>🖥️ Anteprima UI</h2>
-<p>
-  <img src="screenshots/grid-view.png" width="30%" alt="Grid View"/>
-  <img src="screenshots/detail-view.png" width="30%" alt="Detail View"/>
-  <img src="screenshots/pageview.png" width="30%" alt="PageView"/>
-</p>
-<p><i>Aggiungi qui le tue schermate più rappresentative nella cartella <code>screenshots/</code>.</i></p>
-
-<hr>
 
 <h2>⚙️ Tecnologie e dipendenze</h2>
 <ul>
