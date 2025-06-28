@@ -1,9 +1,6 @@
-import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:galleria/pagina_utente.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 import 'photo.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dettagli_foto.dart';
@@ -19,8 +16,6 @@ class UtenteAlternativo extends StatefulWidget {
 class _UtenteAlternativoState extends State<UtenteAlternativo> {
   final _supabase = Supabase.instance.client;
   late Future<List<Photo>> _photosFuture;
-  bool _isUploading = false;
-  final ImagePicker _picker = ImagePicker();
   final _controller = PageController();
   late int conto;
   int _paginaCorrente = 0;
@@ -55,25 +50,6 @@ class _UtenteAlternativoState extends State<UtenteAlternativo> {
     setState(() {
       _photosFuture = _scaricaListaFoto();
     });
-  }
-
-  void _mostraIstruzioni() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Istruzioni'),
-        content: const Text(
-          'Per aggiungere foto, usa il pulsante "+" per caricare immagini dalla galleria o il pulsante della fotocamera per scattare una foto. '
-          'Puoi eliminare le foto con un tap prolungato su di esse.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   Future<bool> _deletePhoto(Photo photo) async {
@@ -124,117 +100,6 @@ class _UtenteAlternativoState extends State<UtenteAlternativo> {
     }
   }
 
-  void _cancellaTutto() async {
-    setState(() => _isUploading = true);
-
-    try {
-      final listaFoto = await _scaricaListaFoto();
-
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
-
-      if (listaFoto.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nessuna foto da eliminare')),
-        );
-        return;
-      }
-
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Cancella tutto'),
-          content: const Text('Vuoi davvero eliminare tutte le foto?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Annulla'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Elimina'),
-            ),
-          ],
-        ),
-      );
-
-      if (confirmed != true) return;
-
-      final confirmedSicuro = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Cancella tutto'),
-          content: const Text(
-            'Quest\'operazione eliminerà tutte le foto ed è irreversibile. Sei sicuro?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Annulla'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Elimina'),
-            ),
-          ],
-        ),
-      );
-
-      if (confirmedSicuro != true) return;
-
-      // Cancella i file dallo storage
-
-      for (final photo in listaFoto) {
-        await _supabase.storage.from('photos').remove([photo.filePath]);
-      }
-
-      // Cancella tutte le foto dell'utente
-      await _supabase.from('photos').delete().eq('user_id', user.id);
-    } catch (e) {
-      print('Error deleting photos: $e');
-    } finally {
-      setState(() => _isUploading = false);
-      _aggiornaFoto();
-    }
-  }
-
-  Future<void> _scattaFoto() async {
-    setState(() => _isUploading = true);
-
-    try {
-      final XFile? pickedFile = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-      );
-
-      if (pickedFile == null) return;
-
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
-
-      final file = File(pickedFile.path);
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final filePath = '${user.id}/$fileName';
-
-      // Upload file nello storage Supabase
-      await _supabase.storage.from('photos').upload(filePath, file);
-
-      // Inserisci i metadati nel database
-      await _supabase.from('photos').insert({
-        'user_id': user.id,
-        'file_path': filePath,
-        'location': null,
-        'author': null,
-        'description': null,
-      });
-    } catch (e) {
-      print('Error taking photo: $e');
-    } finally {
-      setState(() => _isUploading = false);
-      _aggiornaFoto();
-    }
-  }
-
   Future<List<Photo>> _scaricaListaFoto() async {
     try {
       final user = _supabase.auth.currentUser;
@@ -274,49 +139,6 @@ class _UtenteAlternativoState extends State<UtenteAlternativo> {
     }
   }
 
-  Future<void> _uploadFoto() async {
-    setState(() => _isUploading = true);
-
-    try {
-      final List<XFile>? pickedFiles = await _picker.pickMultiImage(
-        imageQuality: 80,
-      );
-
-      if (pickedFiles == null || pickedFiles.isEmpty) return;
-
-      final user = _supabase.auth.currentUser;
-      if (user == null) return;
-
-      for (final pickedFile in pickedFiles) {
-        final file = File(pickedFile.path);
-        final fileName =
-            '${DateTime.now().millisecondsSinceEpoch}_${pickedFile.name}';
-        final filePath = '${user.id}/$fileName';
-
-        // Upload file to storage
-        await _supabase.storage.from('photos').upload(filePath, file);
-
-        // Insert metadata into database
-        await _supabase.from('photos').insert({
-          'user_id': user.id,
-          'file_path': filePath,
-          'location': null,
-          'author': null,
-          'description': null,
-        });
-      }
-    } catch (e) {
-      print('Error uploading files: $e');
-    } finally {
-      setState(() => _isUploading = false);
-      _aggiornaFoto();
-    }
-  }
-
-  Future<void> _logOut() async {
-    await _supabase.auth.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,7 +166,7 @@ class _UtenteAlternativoState extends State<UtenteAlternativo> {
               ],
             ),
 
-            Divider(color: Colors.blue),
+            Divider(color: Colors.grey),
 
             SizedBox(height: 10),
 
@@ -416,7 +238,15 @@ class _UtenteAlternativoState extends State<UtenteAlternativo> {
                   child: SmoothPageIndicator(
                     controller: _controller,
                     count: count,
-                    effect: WormEffect(),
+                    effect: ScrollingDotsEffect(
+                      activeDotColor: Colors.blue,
+                      dotColor: Colors.grey,
+                      dotHeight: 10,
+                      dotWidth: 10,
+                      maxVisibleDots:
+                          7, // Mostra al massimo 7 indicatori, il resto viene "compresso"
+                      spacing: 6,
+                    ),
                   ),
                 );
               },
