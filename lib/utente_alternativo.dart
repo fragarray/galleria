@@ -1,29 +1,54 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:galleria/utente_alternativo.dart';
+import 'package:galleria/pagina_utente.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'photo.dart';
-import 'dettagli_foto.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'dettagli_foto.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class UserPage extends StatefulWidget {
-  const UserPage({super.key});
+class UtenteAlternativo extends StatefulWidget {
+  const UtenteAlternativo({super.key});
 
   @override
-  State<UserPage> createState() => _UserPageState();
+  State<UtenteAlternativo> createState() => _UtenteAlternativoState();
 }
 
-class _UserPageState extends State<UserPage> {
+class _UtenteAlternativoState extends State<UtenteAlternativo> {
   final _supabase = Supabase.instance.client;
   late Future<List<Photo>> _photosFuture;
   bool _isUploading = false;
   final ImagePicker _picker = ImagePicker();
+  final _controller = PageController();
+  late int conto;
+  int _paginaCorrente = 0;
 
   @override
   void initState() {
     super.initState();
     _aggiornaFoto();
+    conto = 0;
+    _controller.addListener(() {
+      setState(() {
+        _paginaCorrente = _controller.page?.round() ?? 0;
+      });
+    });
+  }
+
+  Future<void> _cancellaFotoCorrente() async {
+    final photos = await _photosFuture;
+    if (_paginaCorrente < 0 || _paginaCorrente >= photos.length) return;
+    final photoDaCancellare = photos[_paginaCorrente];
+    final deleted = await _deletePhoto(photoDaCancellare);
+    if (deleted) {
+      _aggiornaFoto();
+      // Se sei sull'ultima pagina e la cancelli, torna indietro di una
+      if (_paginaCorrente >= photos.length - 1 && _paginaCorrente > 0) {
+        _controller.jumpToPage(_paginaCorrente - 1);
+      }
+    }
   }
 
   void _aggiornaFoto() {
@@ -228,6 +253,27 @@ class _UserPageState extends State<UserPage> {
     }
   }
 
+  Future<int> _contaFotoUtente() async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) {
+        conto = 0;
+        return 0;
+      }
+
+      final response = await _supabase
+          .from('photos')
+          .select()
+          .eq('user_id', user.id);
+      print((response as List).length);
+      return (response as List).length;
+    } catch (e) {
+      print('Eccezione nel conteggio foto: $e');
+      conto = 0;
+      return 0;
+    }
+  }
+
   Future<void> _uploadFoto() async {
     setState(() => _isUploading = true);
 
@@ -274,166 +320,106 @@ class _UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Galleria Personale'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.switch_access_shortcut),
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const UtenteAlternativo(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            //appbar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_circle_left_outlined, size: 40),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const UserPage()),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: _mostraIstruzioni,
-            tooltip: 'Istruzioni',
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logOut,
-            tooltip: 'Logout',
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: _cancellaTutto,
-            tooltip: 'Cancella Tutto',
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _aggiornaFoto();
-          await Future.delayed(const Duration(seconds: 1));
-        },
-        child: FutureBuilder<List<Photo>>(
-          future: _photosFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting &&
-                !_isUploading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Errore nel caricamento dell\'immagine',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _aggiornaFoto,
-                      child: const Text('Riprova'),
-                    ),
-                  ],
+                IconButton(
+                  onPressed: _cancellaFotoCorrente,
+                  icon: Icon(Icons.delete),
                 ),
-              );
-            }
+              ],
+            ),
 
-            final photos = snapshot.data ?? [];
+            Divider(color: Colors.blue),
 
-            // ...existing code...
-            return photos.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Nessuna foto trovata',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  )
-                : GridView.builder(
-                    padding: EdgeInsets.all(2.0),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 1,
-                          mainAxisSpacing: 1,
-                          childAspectRatio: 1,
-                        ),
-                    itemCount: photos.length,
-                    itemBuilder: (context, index) {
-                      final photo = photos[index];
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: GestureDetector(
+            SizedBox(height: 10),
+
+            //scollabe horizontal list view
+            Expanded(
+              child: FutureBuilder<List<Photo>>(
+                future: _photosFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Errore: ${snapshot.error}'));
+                  }
+
+                  final photos = snapshot.data ?? [];
+                  if (photos.isEmpty) {
+                    return const Center(child: Text('Nessuna foto trovata'));
+                  }
+
+                  return PageView(
+                    scrollDirection: Axis.horizontal,
+                    controller: _controller,
+                    children: [
+                      for (int i = 0; i < photos.length; i++)
+                        GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    PhotoDetailPage(photo: photo),
+                                    PhotoDetailPage(photo: photos[i]),
                               ),
-                            ).then(
-                              (_) => _aggiornaFoto(),
-                            ); //Al ritorno aggiorna la lista
+                            );
                           },
-
-                          onLongPress: () async {
-                            final deleted = await _deletePhoto(photo);
-                            if (deleted) {
-                              _aggiornaFoto();
-                            }
-                          },
-
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: CachedNetworkImage(
-                              imageUrl: photo.publicUrl,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: CachedNetworkImage(
+                                imageUrl: (photos[i].publicUrl),
+                                fit: BoxFit.contain,
+                                width: 500,
+                                height: 300,
+                                placeholder: (context, url) => const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
                             ),
                           ),
                         ),
-                      );
-                    },
+                    ],
                   );
-          },
-        ),
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              heroTag: 'upload',
-              onPressed: _isUploading ? null : _uploadFoto,
-              child: _isUploading
-                  ? const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 0, 90, 150),
-                    )
-                  : const Icon(Icons.add_photo_alternate),
+                },
+              ),
             ),
-            const SizedBox(height: 16),
-            FloatingActionButton(
-              heroTag: 'camera',
-              onPressed: _isUploading ? null : _scattaFoto,
-              tooltip: 'Scatta Foto',
-              child: _isUploading
-                  ? const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 0, 90, 150),
-                    )
-                  : const Icon(Icons.camera_enhance),
+
+            // Divider(color: Colors.blue, height: 2),
+            // SizedBox(height: 20),
+            FutureBuilder<int>(
+              future: _contaFotoUtente(),
+              builder: (context, snapshot) {
+                final count = snapshot.data ?? 0;
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SmoothPageIndicator(
+                    controller: _controller,
+                    count: count,
+                    effect: WormEffect(),
+                  ),
+                );
+              },
             ),
           ],
         ),

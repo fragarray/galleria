@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login_page.dart';
 import 'pagina_utente.dart';
+import 'utente_alternativo.dart';
 
 class AuthChecker extends StatefulWidget {
   const AuthChecker({super.key});
